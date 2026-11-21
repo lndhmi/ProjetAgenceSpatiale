@@ -46,7 +46,14 @@ public class Zone {
     public List<Echantillon> getEchantillons() {
         return echantillons;
     }
+	public synchronized boolean peutEtreExploree(TypeVehicule type) {
+        return !vehiculesAyantExplore.contains(type);
+    }
 
+    public synchronized boolean commencerExploration(TypeVehicule type) {
+        if (vehiculesAyantExplore.contains(type)) {
+            return false;
+        }
 
 	//zone tiree au sort 
 	public int getZoneObj() {
