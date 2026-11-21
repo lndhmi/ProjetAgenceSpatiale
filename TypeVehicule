@@ -1,0 +1,4 @@
+enum TypeVehicule {
+    ROVER,
+    DRONE
+}
