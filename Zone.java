@@ -5,7 +5,7 @@ public class Zone {
 	private Position position ;
 	private double interetScientifique ;
 	private TypeTerrain type;
-	private int ZoneObj; //nb de zone
+	 //nb de zone
 	private int TempsZone;
 	private List<Echantillon> echantillons;
 	private Set<TypeVehicule> vehiculesAyantExplore;
@@ -56,12 +56,7 @@ public class Zone {
         }
 
 	//zone tiree au sort 
-	public int getZoneObj() {
-		return ZoneObj;
-	}
-	public void setZoneObj(int zoneObj) {
-		ZoneObj = zoneObj;
-	}
+
 	
 	
 }
