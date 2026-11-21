@@ -9,8 +9,10 @@ public class Mission {
 	private boolean estReussie;
 	private int budget;
 	private EtatMission etat = EtatMission.PLANIFIEE;
+	private List<Zone> zonesobj;
+	private List<Zone> zonesExplorees;
 	
-	public Mission(String nom,boolean reussie,int budget,LocalDate dateDebut,LocalDate dateFin) {
+	public Mission(String nom,boolean reussie,int budget,LocalDate dateDebut,LocalDate dateFin,List<Zone> zonesObj) {
 		if (dateDebut == null || dateFin == null) {
 		        throw new IllegalArgumentException("Les dates sont obligatoires");
 		}
@@ -22,7 +24,8 @@ public class Mission {
 		this.dateDebut=dateDebut;
 		this.dateFin=dateFin;
 		this.budget=budget;
-		
+		this.zonesObj = zonesObj;
+        this.zonesExplorees = new ArrayList<>();
 	}
 	 public String getNom() {
 		 return nom;
@@ -54,7 +57,10 @@ public class Mission {
 	 public void setEstReussie(boolean estReussie) {
 		this.estReussie = estReussie;
 	 }
-	 
-	 
-	 
+	 public booleen estReussie(){
+		 if(zonesObj.isEmpty()){
+			 return false;
+		 }
+		 double pourcentage=(double) zonesExplorees.size()/ zonesObj.size()*100 ;
+		 return pourcentage >=70;
 }
