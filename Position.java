@@ -15,4 +15,12 @@ public class Position {
     public int getY() {
     	return y; 
     	}
+	public double distance(Position p) {
+        double dx = x - p.x;
+        double dy = y - p.y;
+        return Math.sqrt(dx * dx + dy * dy);
+	}
+	public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }
