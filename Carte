@@ -1,0 +1,31 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class Carte {
+    private String nom;
+    private Map<String, Zone> zones;
+
+    public Carte(String nom) {
+        this.nom = nom;
+        this.zones = new HashMap<>();
+    }
+    public void ajouterZone(Zone zone ){
+        zones.put(zone.getNom(),zone);
+}
+     public Zone chercherZone(String nom ){
+        return zones.get(nom);
+}    
+      
+     public void afficherCarte() {
+        System.out.println("Carte de " + nom);
+
+        for (Zone zone : zones.values()) {
+            System.out.println(zone);
+        }
+    }
+
+    public Map<String, Zone> getZones() {
+        return zones;
+    }
+
+}
