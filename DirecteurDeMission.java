@@ -36,8 +36,9 @@ public class DirecteurDeMission extends Personne {
 
 
 	public void setBudgetTot(int budgetTot) {
-		budgetTot = budgetTot;
+		this.budgetTot = budgetTot;
 	}
+	
 	void ajouterMission(Mission m) {
         missions.add(m);
     }
