@@ -5,8 +5,13 @@ public class Echantillon {
 	private float masse;
 
 public Echantillon (float masse, TypeTerrain type ) {
+	if (masse <= 0) {
+            throw new IllegalArgumentException("La masse doit être positive");
+        }
+	this.masse=masse ;
 	this.setType(type);
 }
+
 
 public float getMasse() {
 	return masse;
