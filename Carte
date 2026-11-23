@@ -1,20 +1,23 @@
 import java.util.HashMap;
 import java.util.Map;
 
-class Carte {
+public class Carte {
     private String nom;
-    private Map<String, Zone> zones;
+    private largeur ;
+    private hauteur ;
+    private TreeSet<Zone> zones;
 
-    public Carte(String nom) {
+    public Carte(String nom,int largeur,int hauteur) {
         this.nom = nom;
-        this.zones = new HashMap<>();
+        this.zones = new Treeset<>();
     }
     public void ajouterZone(Zone zone ){
-        zones.put(zone.getNom(),zone);
-}
-     public Zone chercherZone(String nom ){
-        return zones.get(nom);
-}    
+        int x = zone.getPosition().getX();
+        int y = zone.getPosition().getY();
+     }
+    // verifier si la po est dans la carte 
+     if (x<0|| x>=largeur || y<0|| y>=hauteur){
+         
       
      public void afficherCarte() {
         System.out.println("Carte de " + nom);
@@ -24,7 +27,7 @@ class Carte {
         }
     }
 
-    public Map<String, Zone> getZones() {
+    public Treeset<Zone> getZones() {
         return zones;
     }
 
