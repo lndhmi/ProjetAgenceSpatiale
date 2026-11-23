@@ -1,11 +1,10 @@
 package tp1;
 
-public class Zone {
+public class Zone Comparable <Zone> {
 	private String nom;
 	private Position position ;
 	private double interetScientifique ;
 	private TypeTerrain type;
-	 //nb de zone
 	private int TempsZone;
 	private List<Echantillon> echantillons;
 	private Set<TypeVehicule> vehiculesAyantExplore;
@@ -54,9 +53,20 @@ public class Zone {
         if (vehiculesAyantExplore.contains(type)) {
             return false;
         }
-
-	//zone tiree au sort 
-
-	
-	
+		@Override 
+		public int compareTo(Zone T){
+			int resultat =Integer.compare(this.position.getY(),T.position.getY());
+		    if (resulat!=0){
+				return resultat ;
+			}
+		    return Integer.compare(this.position.getX(),T.position.getX());
+		
+	}
 }
+		
+			
+
+
+	
+	
+
