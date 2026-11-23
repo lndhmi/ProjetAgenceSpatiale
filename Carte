@@ -15,16 +15,18 @@ public class Carte {
         int x = zone.getPosition().getX();
         int y = zone.getPosition().getY();
      }
-    // verifier si la po est dans la carte 
+    // verifier si la pos est dans la carte 
      if (x<0|| x>=largeur || y<0|| y>=hauteur){
+            throw new IllegalArgumentException("position hors carte ");
+}
          
-      
+      if (!zones.add(zone)){
+          throw new IllegalArgumentException ("Position deja occupe ");
+}
      public void afficherCarte() {
-        System.out.println("Carte de " + nom);
+        System.out.println(zone.getNom() + " " + zone.getPosition());
 
-        for (Zone zone : zones.values()) {
-            System.out.println(zone);
-        }
+       
     }
 
     public Treeset<Zone> getZones() {
