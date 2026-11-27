@@ -1,9 +1,14 @@
 package tp1;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 public class Zone {
 	private String nom;
 	private Position position ;
-	private double interetScientifique ;
+	private int interetScientifique ;
 	private TypeTerrain type;
 	private int ZoneObj; //nb de zone
 	private int TempsZone;
@@ -11,7 +16,7 @@ public class Zone {
 	private Set<TypeVehicule> vehiculesAyantExplore;
 
 
-	public Zone(String nom, Position position, TypeTerrain type,double interetScientifique) {
+	public Zone(String nom, Position position, TypeTerrain type,int interetScientifique) {
         if (interetScientifique < 0 || interetScientifique > 10) {
             throw new IllegalArgumentException("L'intérêt scientifique doit être entre 0 et 10" );
         }
@@ -35,7 +40,7 @@ public class Zone {
         return type;
     }
 
-    public double getInteretScientifique() {
+    public int getInteretScientifique() {
         return interetScientifique;
     }
 
@@ -49,11 +54,6 @@ public class Zone {
 	public synchronized boolean peutEtreExploree(TypeVehicule type) {
         return !vehiculesAyantExplore.contains(type);
     }
-
-    public synchronized boolean commencerExploration(TypeVehicule type) {
-        if (vehiculesAyantExplore.contains(type)) {
-            return false;
-        }
 
 	//zone tiree au sort 
 	public int getZoneObj() {

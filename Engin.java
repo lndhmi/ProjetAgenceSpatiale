@@ -1,5 +1,7 @@
 package tp1;
 
+import java.util.Random;
+
 public abstract class Engin {
 	private int id;
 	private String  nom;
@@ -58,12 +60,13 @@ public void TomberPanne() {
 	etat=EtatEngin.EN_PANNE;;
 	miss=null;
 }
-
+public abstract TypeVehicule getType();
 public void RemettreService () {
 	if(etat!=EtatEngin.EN_PANNE) {
 		throw new IllegalStateException("l'engin n'est pas en panne ");
 	}
 	etat= EtatEngin.DISPONIBLE;
 }
+public abstract Echantillon explorer(Zone zone, Random random);
 }
 

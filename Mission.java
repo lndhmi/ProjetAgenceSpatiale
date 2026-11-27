@@ -1,14 +1,20 @@
 package tp1;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
-public class Mission {
+public class Mission implements Comparable<Mission> {
+	private CorpsCeleste corpsCel;
 	private String nom;
 	private LocalDate dateDebut;
 	private LocalDate dateFin;
 	private boolean estReussie;
 	private int budget;
+	private DirecteurDeMission directeur;
+	private List<Operateur>operateurs;
 	private EtatMission etat = EtatMission.PLANIFIEE;
+	private final List<Zone> zonesExplorees = new ArrayList<>();
 	
 	public Mission(String nom,boolean reussie,int budget,LocalDate dateDebut,LocalDate dateFin) {
 		if (dateDebut == null || dateFin == null) {
@@ -16,6 +22,9 @@ public class Mission {
 		}
 		if (dateFin.isBefore(dateDebut)) {
 		    throw new IllegalArgumentException("La date de fin doit être après la date de début");
+		}
+		if (directeur == null) {
+			throw new IllegalArgumentException("Pas de mission sans directeur");
 		}
 		this.nom=nom;
 		this.setEstReussie(reussie);
@@ -55,6 +64,17 @@ public class Mission {
 		this.estReussie = estReussie;
 	 }
 	 
-	 
+	 @Override
+	    public int compareTo(Mission autre) {
+	        return this.dateDebut.compareTo(autre.dateDebut);
+	    }
+	 private double interetTotal() {
+			double tot = 0;
+			for (Zone z : zonesExplorees) {
+				tot += z.getInteretScientifique();
+			}
+			return tot;
+		}
+
 	 
 }
