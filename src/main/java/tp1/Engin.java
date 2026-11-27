@@ -3,6 +3,7 @@ package tp1;
 import java.util.Random;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 
@@ -82,8 +83,7 @@ public void RemettreService () {
 	}
 	etat= EtatEngin.DISPONIBLE;
 }
-public abstract Echantillon explorer(Zone zone, Random random);
-}
+public abstract Echantillon explorer(Zone zone, Random random) ;
 
 
 //regrouper les engins selon leur etats 
@@ -101,4 +101,5 @@ public static Map<EtatEngin, List<Engin>> enginsParEtat(List<Engin> engins) {
     }
 
     return resultat;
+}
 }

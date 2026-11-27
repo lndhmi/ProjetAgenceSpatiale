@@ -6,7 +6,6 @@ import java.util.List;
 public class CorpsCeleste {
 	private String nom;
 	private boolean atmosphere;
-	private int carte ;
 	private List<Zone> zones = new ArrayList<>();
 
 	public CorpsCeleste(String nom, boolean atmosphere) {

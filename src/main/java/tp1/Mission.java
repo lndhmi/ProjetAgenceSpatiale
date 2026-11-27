@@ -1,5 +1,5 @@
 package tp1;
-import java.util.Map;
+
 import java.util.Comparator;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -105,6 +105,21 @@ public class Mission implements Comparable<Mission> {
 		if (etat != EtatMission.PLANIFIEE) {
 			throw new IllegalStateException("La mission n'est plus planifiee");
 		}
+	}
+	
+	public static List<Mission> missionsPlanifiees(List<Mission> missions) {
+	    List<Mission> resultat = new ArrayList<>();
+
+	    for (Mission m : missions) {
+	        if (m.getEtat() == EtatMission.PLANIFIEE) {
+	            resultat.add(m);
+	        }
+	    }
+
+	    Collections.sort(resultat,
+	        Comparator.comparing(Mission::getDateDebut));
+
+	    return resultat;
 	}
 
 	// ---------- Demarrage ----------

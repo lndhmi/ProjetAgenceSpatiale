@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Comparator;
+
+
 public class Zone implements Comparable<Zone> {
 	private String nom;
 	private Position position;
 	private double interetScientifique;
 	private TypeTerrain type;
-	private int TempsZone;
+	
 	private List<Echantillon> echantillons;
 	private Set<TypeVehicule> vehiculesAyantExplore;
 	private boolean cartographiee = false;
@@ -63,6 +64,9 @@ public class Zone implements Comparable<Zone> {
 		vehiculesAyantExplore.add(type);
 		return true;
 	}
+	public synchronized boolean estExploree() {
+	    return !vehiculesAyantExplore.isEmpty();
+	}
 
 	@Override
 	public int compareTo(Zone t) {
@@ -80,4 +84,8 @@ public class Zone implements Comparable<Zone> {
 	public synchronized boolean estCartographiee() {
 		return cartographiee;
 	}
+	
+	
 }
+
+    
