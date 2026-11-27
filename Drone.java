@@ -28,9 +28,12 @@ public class Drone extends Engin implements Deplacer, Cartographe {
 
 	@Override
 	public Echantillon explorer(Zone zone, Random random) {
-		seDeplacer(zone.getPosition());
-		Cartographier(zone);
-		return null;
+	    if (!zone.commencerExploration(getType())) {
+	        return null; // déjà explorée par un drone
+	    }
+	    seDeplacer(zone.getPosition());
+	    Cartographier(zone);
+	    return null;
 	}
 
 }

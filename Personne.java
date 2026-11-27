@@ -49,6 +49,9 @@ public abstract class Personne {
 	 public void setPrenom(String prenom) {
 		 this.prenom=prenom;
 	 }
+	 protected static void libererId(long id) {
+		    idUtilise.remove(id);
+		}//retire id pour qu'il peut etre utilise
 	 public void setGenre(String genre) {
 		 if(genre==null || !genre.matches("[FH]")) {
 			 throw new IllegalArgumentException("genre non valide");

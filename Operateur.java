@@ -38,5 +38,8 @@ public class Operateur extends Personne{
 	public List<Cadet> getCadets() {
 	    return Collections.unmodifiableList(cadets);
 	}
+	public void retirerCadet(Cadet c) {
+	    cadets.remove(c);
+	}
 	
 }

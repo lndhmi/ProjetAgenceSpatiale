@@ -7,10 +7,13 @@ public class Cadet extends Personne {
 	private Operateur operateur;
 	private List<Mission>missions;
 	
-	public Cadet(long id, String nom, String prenon, String genre, String tel,Operateur operateur) {
-		super(id, nom, prenon, genre, tel);
-		this.operateur=operateur;
-		missions=new ArrayList<>();
+	public Cadet(long id, String nom, String prenon, String genre, String tel, Operateur operateur) {
+	    super(id, nom, prenon, genre, tel);
+	    if (operateur == null) {
+	        throw new IllegalArgumentException("Un cadet doit avoir un tuteur");
+	    }
+	    this.operateur = operateur;
+	    missions = new ArrayList<>();
 	}
 
 	public List<Mission> getMissions() {
@@ -45,6 +48,7 @@ public class Cadet extends Personne {
 	
 	public Operateur devenirOperateur() {
 	    if (compterMissionsReussies() >= 3) {
+	    	libererId(this.getId()); 
 	        Operateur nvOperateur = new Operateur(
 	        		this.getId(),
 	        		this.getNom(),

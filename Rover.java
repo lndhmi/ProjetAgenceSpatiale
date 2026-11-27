@@ -26,13 +26,16 @@ public class Rover extends Engin implements Deplacer , Preleve{
 
 	@Override
 	public Echantillon explorer(Zone zone, Random random) {
-		seDeplacer(zone.getPosition());
-		return prelever(zone, random);
+	    if (!zone.commencerExploration(getType())) {
+	        return null; // déjà explorée par un rover
+	    }
+	    seDeplacer(zone.getPosition());
+	    return prelever(zone, random);
 	}
 
 	@Override
 	public TypeVehicule getType() {
-		return TypeVehicule.DRONE;
+		return TypeVehicule.ROVER;
 	}
 	
 
