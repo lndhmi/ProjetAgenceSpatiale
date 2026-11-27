@@ -31,4 +31,20 @@ public class CorpsCeleste {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+	public synchronized double tauxExploration() {
+	    if (zones.isEmpty()) {
+	        return 0;
+	    }
+
+	    int nbExplorees = 0;
+
+	    for (Zone z : zones) {
+	        if (z.estExploree()) {
+	            nbExplorees++;
+	        }
+	    }
+
+	    return (double) nbExplorees / zones.size() * 100; // retourner le taux dexploration du corps celeste 
+	}
+	
 }

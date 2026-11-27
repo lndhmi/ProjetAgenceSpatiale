@@ -59,4 +59,28 @@ public class Operateur extends Personne {
 	public void setMission(Mission mission) {
 		this.mission = mission;
 	}
+	public static List<Operateur> operateursDisponibles(List<Operateur> operateurs) {
+	    List<Operateur> resultat = new ArrayList<>();
+
+	    for (Operateur op : operateurs) {
+	        if (op.getMission() == null) {
+	            resultat.add(op);
+	        }
+	    }
+
+	    return resultat;
+	}
+	// le nombres d'operateur disponibles 
+	 public static List<Operateur> operateursOccupes(List<Operateur> operateurs ){
+		 List<Operateur> resultat = new ArrayList<>();
+		 for (Operateur op : operateurs) {
+			 if (op.getMission() != null) {
+		            resultat.add(op);
+		        }
+		    }
+		 return resultat;
+		 }
+	 // le nombre d'oprateur non diponibles 
 }
+
+
