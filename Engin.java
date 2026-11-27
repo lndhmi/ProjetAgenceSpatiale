@@ -61,6 +61,7 @@ public void TomberPanne() {
 	miss=null;
 }
 public abstract TypeVehicule getType();
+
 public void RemettreService () {
 	if(etat!=EtatEngin.EN_PANNE) {
 		throw new IllegalStateException("l'engin n'est pas en panne ");

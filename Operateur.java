@@ -2,6 +2,7 @@ package tp1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class Operateur extends Personne{
 	
@@ -33,6 +34,9 @@ public class Operateur extends Personne{
 	}
 	public void setMission(Mission mission) {
 		this.mission = mission;
+	}
+	public List<Cadet> getCadets() {
+	    return Collections.unmodifiableList(cadets);
 	}
 	
 }

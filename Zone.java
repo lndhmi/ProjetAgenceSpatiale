@@ -1,67 +1,74 @@
 package tp1;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Set;
 import java.util.HashSet;
-public class Zone {
+import java.util.List;
+import java.util.Set;
+
+public class Zone implements Comparable<Zone> {
 	private String nom;
-	private Position position ;
-	private int interetScientifique ;
+	private Position position;
+	private double interetScientifique;
 	private TypeTerrain type;
-	private int ZoneObj; //nb de zone
 	private int TempsZone;
 	private List<Echantillon> echantillons;
 	private Set<TypeVehicule> vehiculesAyantExplore;
 
-
-	public Zone(String nom, Position position, TypeTerrain type,int interetScientifique) {
-        if (interetScientifique < 0 || interetScientifique > 10) {
-            throw new IllegalArgumentException("L'intérêt scientifique doit être entre 0 et 10" );
-        }
-	    this.nom = nom;
-	    this.position=position;
-		this.type=type ;
-		this.interetScientifique=interetScientifique;
-		this.echantillons=Collections.synchronizedList(new ArrayList<>()) ;
-		this.vehiculesAyantExplore = new HashSet<>(); 
-		
+	public Zone(String nom, Position position, TypeTerrain type, double interetScientifique) {
+		if (interetScientifique < 0 || interetScientifique > 10) {
+			throw new IllegalArgumentException("L'intérêt scientifique doit être entre 0 et 10");
+		}
+		this.nom = nom;
+		this.position = position;
+		this.type = type;
+		this.interetScientifique = interetScientifique;
+		this.echantillons = Collections.synchronizedList(new ArrayList<>());
+		this.vehiculesAyantExplore = new HashSet<>();
 	}
-	 public String getNom() {
-        return nom;
-    }
 
-    public Position getPosition() {
-        return position;
-    }
+	public String getNom() {
+		return nom;
+	}
 
-    public TypeTerrain getTypeTerrain() {
-        return type;
-    }
+	public Position getPosition() {
+		return position;
+	}
 
-    public int getInteretScientifique() {
-        return interetScientifique;
-    }
+	public TypeTerrain getTypeTerrain() {
+		return type;
+	}
+
+	public double getInteretScientifique() {
+		return interetScientifique;
+	}
 
 	public void ajouterEchantillon(Echantillon e) {
-        echantillons.add(e);
-    }
+		echantillons.add(e);
+	}
 
-    public List<Echantillon> getEchantillons() {
-        return echantillons;
-    }
+	public List<Echantillon> getEchantillons() {
+		return echantillons;
+	}
+
 	public synchronized boolean peutEtreExploree(TypeVehicule type) {
-        return !vehiculesAyantExplore.contains(type);
-    }
+		return !vehiculesAyantExplore.contains(type);
+	}
 
-	//zone tiree au sort 
-	public int getZoneObj() {
-		return ZoneObj;
+	public synchronized boolean commencerExploration(TypeVehicule type) {
+		if (vehiculesAyantExplore.contains(type)) {
+			return false;
+		}
+		vehiculesAyantExplore.add(type);
+		return true;
 	}
-	public void setZoneObj(int zoneObj) {
-		ZoneObj = zoneObj;
+
+	@Override
+	public int compareTo(Zone t) {
+		int resultat = Integer.compare(this.position.getY(), t.position.getY());
+		if (resultat != 0) {
+			return resultat;
+		}
+		return Integer.compare(this.position.getX(), t.position.getX());
 	}
-	
-	
 }
