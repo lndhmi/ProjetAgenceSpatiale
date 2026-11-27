@@ -14,6 +14,7 @@ public class Zone implements Comparable<Zone> {
 	private int TempsZone;
 	private List<Echantillon> echantillons;
 	private Set<TypeVehicule> vehiculesAyantExplore;
+	private boolean cartographiee = false;
 
 	public Zone(String nom, Position position, TypeTerrain type, double interetScientifique) {
 		if (interetScientifique < 0 || interetScientifique > 10) {
@@ -70,5 +71,13 @@ public class Zone implements Comparable<Zone> {
 			return resultat;
 		}
 		return Integer.compare(this.position.getX(), t.position.getX());
+	}
+
+	public synchronized void marquerCartographiee() {
+		cartographiee = true;
+	}
+
+	public synchronized boolean estCartographiee() {
+		return cartographiee;
 	}
 }

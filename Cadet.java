@@ -45,7 +45,17 @@ public class Cadet extends Personne {
 	    }
 	    return cpt;
 	}
-	
+	public void changerTuteur(Operateur nouveau) {
+	    if (nouveau == null) {
+	        throw new IllegalArgumentException("Un cadet doit avoir un tuteur");
+	    }
+	    if (nouveau == operateur) {
+	        return;
+	    }
+	    operateur.retirerCadet(this);
+	    operateur = nouveau;
+	    nouveau.ajouterCadet(this);
+	}
 	public Operateur devenirOperateur() {
 	    if (compterMissionsReussies() >= 3) {
 	    	libererId(this.getId()); 

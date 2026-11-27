@@ -22,18 +22,28 @@ public class main {
 		// Test : pas plus de 3 compétences, pas de doublon
 		ripley.ajouterCompetences(Competence.geologie);       // doublon
 		ripley.ajouterCompetences(Competence.energie);         // 3e
-		ripley.ajouterCompetences(Competence.telecommunications); // 4e -> doit être ignorée
-		System.out.println("Apres ajouts (doublon + 4e) : " + ripley.getCompetences()
+		System.out.println("Apres ajouts (doublon + 3e) : " + ripley.getCompetences()
 				+ " -> " + ripley.getCompetences().size() + " competences (attendu 3)");
 
 		Cadet luke = new Cadet(3, "Skywalker", "Luke", "H", "0605060708", ripley);
-		ripley.ajouterCadet(luke);
 		System.out.println("Cadet Luke, tuteur : " + luke.getOperateur().getNom());
+		System.out.println("Luke est dans les cadets de Ripley ? " + ripley.getCadets().contains(luke) + " (attendu true)");
+
+		// Changement de tuteur
+		Operateur sulu = new Operateur(5, "Sulu", "Hikaru", "H", "0655555555");
+		sulu.ajouterCompetences(Competence.pilotage_rover);
+		luke.changerTuteur(sulu);
+		System.out.println("Apres changement : tuteur = " + luke.getOperateur().getNom()
+				+ ", chez Ripley ? " + ripley.getCadets().contains(luke) + " (attendu false)"
+				+ ", chez Sulu ? " + sulu.getCadets().contains(luke) + " (attendu true)");
+		luke.changerTuteur(ripley); // on le remet chez Ripley pour la suite
 
 		System.out.println("\n----- Cas interdits -----");
 		testerErreur("id deja utilise", () -> new Operateur(1, "Kirk", "James", "H", "0611111111"));
 		testerErreur("genre invalide", () -> new Operateur(10, "Kirk", "James", "X", "0611111111"));
 		testerErreur("telephone invalide", () -> new Operateur(11, "Kirk", "James", "H", "12345"));
+		testerErreur("4e competence", () -> ripley.ajouterCompetences(Competence.telecommunications));
+		testerErreur("modifier les competences de l'exterieur", () -> ripley.getCompetences().clear());
 		testerErreur("cadet sans tuteur", () -> new Cadet(12, "Solo", "Han", "H", "0622222222", null));
 
 		System.out.println("\n2. ZONES et ECHANTILLONS");
@@ -81,6 +91,14 @@ public class main {
 
 		Echantillon e = curiosity.prelever(z2, new Random(42));
 		System.out.println("Prelevement du rover : " + (e == null ? "null (a coder)" : e.getType() + " " + e.getMasse()));
+
+		// explorer() : une seule exploration par type de vehicule
+		Random rnd = new Random(42);
+		Echantillon ex1 = curiosity.explorer(z4, rnd);
+		Echantillon ex2 = curiosity.explorer(z4, rnd);
+		System.out.println("Rover explore z4 : " + ex1 + " ; 2e fois : " + ex2 + " (attendu null)");
+		ingenuity.explorer(z4, rnd);
+		System.out.println("Drone a cartographie z4 ? " + z4.estCartographiee() + " (attendu true)");
 
 		System.out.println("\n5. MISSIONS");
 

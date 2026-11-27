@@ -23,7 +23,7 @@ public class Drone extends Engin implements Deplacer, Cartographe {
 
 	@Override
 	public void Cartographier(Zone zone) {
-		//fait par mission
+		zone.marquerCartographiee();
 	}
 
 	@Override
