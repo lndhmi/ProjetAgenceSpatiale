@@ -3,6 +3,8 @@ package tp1;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Future;
+import java.util.ArrayList;
 
 public class main {
 
@@ -184,32 +186,120 @@ public class main {
 		} catch (IllegalArgumentException ex) {
 			System.out.println("BUG : la promotion plante -> " + ex.getMessage());
 		}
-		 GestionRapport gestion = new GestionRapport();
 
-	        // Création d'un rapport
-	        RapportMission rapport = new RapportMission(
-	            "Mission Mars",
-	            "Rapport d'exploration",
-	            "Le rover a exploré la zone nord et collecté 3 échantillons."
-	        );
+		demoAgence();
+	}
 
-	        // Sauvegarde
-	        gestion.sauvegarder(rapport);
+	/** Section 8 : l'agence lance et simule les missions dans des threads. */
+	private static void demoAgence() {
+		System.out.println("\n===== 8. AGENCE ET SIMULATION =====");
 
-	        // Recherche par identifiant
-	        RapportMission resultat = gestion.rechercher(1L);
+		// Connexion a la base H2 : chaque rapport de fin de mission y est sauvegarde automatiquement
+		GestionRapport gestion = new GestionRapport();
+		Agence agence = new Agence(2026, gestion); // graine fixe -> resultats reproductibles
 
-	        if (resultat != null) {
-	            System.out.println("Rapport retrouvé :");
-	            System.out.println(resultat);
-	        } else {
-	            System.out.println("Rapport introuvable.");
-	        }
+		// Le monde : deux corps celestes avec une petite carte 3x3
+		CorpsCeleste marsA = new CorpsCeleste("Mars", true);
+		CorpsCeleste titan = new CorpsCeleste("Titan", true);
+		TypeTerrain[] terrains = TypeTerrain.values();
+		Random r = new Random(7);
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				marsA.ajouterZone(new Zone("Mars-" + x + y, new Position(x, y), terrains[r.nextInt(terrains.length)], r.nextInt(11)));
+				titan.ajouterZone(new Zone("Titan-" + x + y, new Position(x, y), terrains[r.nextInt(terrains.length)], r.nextInt(11)));
+			}
+		}
+		agence.ajouterCorpsCeleste(marsA);
+		agence.ajouterCorpsCeleste(titan);
 
-	        GestionRapport.fermer();
-	    }
-	
-	    
+		// Les personnes
+		DirecteurDeMission janeway = new DirecteurDeMission(100, "Janeway", "Kathryn", "F", "0610000000");
+		Operateur paris = new Operateur(101, "Paris", "Tom", "H", "0610000001");
+		paris.ajouterCompetences(Competence.pilotage_rover);
+		paris.ajouterCompetences(Competence.pilotege_drone);
+		Operateur torres = new Operateur(102, "Torres", "Belanna", "F", "0610000002");
+		torres.ajouterCompetences(Competence.pilotage_rover);
+		torres.ajouterCompetences(Competence.energie);
+		Cadet kim = new Cadet(103, "Kim", "Harry", "H", "0610000003", paris);
+		agence.ajouterPersonne(janeway);
+		agence.ajouterPersonne(paris);
+		agence.ajouterPersonne(torres);
+		agence.ajouterPersonne(kim);
+
+		// Les engins
+		Rover perseverance = new Rover(100, "Perseverance", new Position(0, 0));
+		Drone ingenuity2 = new Drone(101, "Ingenuity II", new Position(0, 0));
+		Rover dragonfly = new Rover(102, "Dragonfly", new Position(0, 0));
+		agence.ajouterEngin(perseverance);
+		agence.ajouterEngin(ingenuity2);
+		agence.ajouterEngin(dragonfly);
+
+		// Les missions (dates melangees : l'agence doit lancer la plus proche d'abord)
+		Mission mTitan = new Mission("Titan-1", 300_000, LocalDate.of(2028, 3, 1), LocalDate.of(2028, 6, 1),
+				titan.getZones(), titan, janeway);
+		mTitan.ajouterEngin(dragonfly);
+		mTitan.ajouterOperateur(torres);
+
+		Mission mMars = new Mission("Mars-1", 500_000, LocalDate.of(2028, 1, 1), LocalDate.of(2028, 4, 1),
+				marsA.getZones(), marsA, janeway);
+		mMars.ajouterEngin(perseverance);
+		mMars.ajouterEngin(ingenuity2);
+		mMars.ajouterOperateur(paris);
+
+		Mission mMars2 = new Mission("Mars-2", 200_000, LocalDate.of(2028, 9, 1), LocalDate.of(2028, 12, 1),
+				new ArrayList<>(marsA.getZones()), marsA, janeway);
+		mMars2.ajouterEngin(perseverance); // meme rover que Mars-1 : il faudra attendre
+		mMars2.ajouterOperateur(paris);
+
+		agence.planifierMission(mTitan);
+		agence.planifierMission(mMars2);
+		agence.planifierMission(mMars);
+		System.out.print("Missions planifiees (la plus proche d'abord) :");
+		for (Mission m : agence.getMissionsPlanifiees()) {
+			System.out.print(" " + m.getNom());
+		}
+		System.out.println();
+
+		// Lancements : chaque mission tourne dans son propre thread
+		Future<RapportMission> fMars = agence.lancerProchaineMission();
+		Future<RapportMission> fTitan = agence.lancerProchaineMission();
+		System.out.println("Lancees : Mars-1 et Titan-1. En cours : " + agence.getMissionsEnCours().size());
+		testerErreur("lancer Mars-2 (rover et operateur deja occupes)", () -> agence.lancerProchaineMission());
+
+		// Le main reste utilisable pendant la simulation
+		System.out.println("Pendant la simulation : Mars-1 est " + mMars.getEtat() + ", fini ? " + fMars.isDone());
+		RapportMission tropTot = agence.attendreRapport(fMars, 10);
+		System.out.println("Rapport apres 10 ms : " + tropTot + " (attendu null, pas encore fini)");
+
+		// On attend les rapports (2 secondes maximum)
+		System.out.println(agence.attendreRapport(fMars, 2000));
+		System.out.println(agence.attendreRapport(fTitan, 2000));
+		System.out.println("Etats des engins : " + perseverance.getnom() + "=" + perseverance.getetat()
+				+ ", " + ingenuity2.getnom() + "=" + ingenuity2.getetat()
+				+ ", " + dragonfly.getnom() + "=" + dragonfly.getetat());
+
+		// Mars-1 est finie : Mars-2 peut maintenant partir (si Perseverance n'est pas en panne)
+		if (perseverance.getetat() == EtatEngin.EN_PANNE) {
+			perseverance.RemettreService();
+			System.out.println("Perseverance etait en panne : remis en service");
+		}
+		Future<RapportMission> fMars2 = agence.lancerProchaineMission();
+		System.out.println(agence.attendreRapport(fMars2, 2000));
+		System.out.println("Missions de Kim : " + kim.getMissions().size()
+				+ ", dont reussies : " + kim.compterMissionsReussies());
+		System.out.println("Budget des missions reussies de Janeway : " + janeway.budgetMissionsReussies());
+
+		// Arret propre : plus aucun thread ne tourne apres
+		agence.arreter();
+		System.out.println("Agence arretee. Rapports produits : " + agence.getRapports().size());
+
+		// Relecture depuis la base H2 (les rapports des executions precedentes y sont aussi)
+		System.out.println("\nRapports en base : " + gestion.tous().size());
+		for (RapportMission rap : gestion.parCorpsCeleste("Mars")) {
+			System.out.println("  " + rap);
+		}
+		gestion.fermer();
+	}
 
 	/** Lance une action qui DOIT lever une exception et affiche le résultat. */
 	private static void testerErreur(String description, Runnable action) {

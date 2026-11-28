@@ -1,77 +1,82 @@
 package tp1;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "rapports_mission")
-public class RapportMission {
+import java.util.List;
 
-	  @Id
-	   @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
-	    private String nomMission;
+/**
+ * Sauvegarde et recherche des rapports de mission dans la base H2 (via JPA).
+ */
+public class GestionRapport {
 
-	    private String titre;
+	private final EntityManagerFactory emf;
 
-	    @Column(length = 5000)
-	    private String contenu;
-
-	    private LocalDateTime dateCreation;
-
-	    // Constructeur obligatoire pour JPA
-	    public RapportMission() {
-	    }
-
-	    public RapportMission(String nomMission, String titre, String contenu) {
-	        this.nomMission = nomMission;
-	        this.titre = titre;
-	        this.contenu = contenu;
-	        this.dateCreation = LocalDateTime.now();
-	    }
-
-	    public Long getId() {
-	        return id;
-	    }
-
-	    public String getNomMission() {
-	        return nomMission;
-	    }
-
-	    public String getTitre() {
-	        return titre;
-	    }
-
-	    public String getContenu() {
-	        return contenu;
-	    }
-
-	    public LocalDateTime getDateCreation() {
-	        return dateCreation;
-	    }
-
-	    public void setNomMission(String nomMission) {
-	        this.nomMission = nomMission;
-	    }
-
-	    public void setTitre(String titre) {
-	        this.titre = titre;
-	    }
-
-	    public void setContenu(String contenu) {
-	        this.contenu = contenu;
-	    }
-
-	    @Override
-	    public String toString() {
-	        return "RapportMission{" +
-	                "id=" + id +
-	                ", nomMission='" + nomMission + '\'' +
-	                ", titre='" + titre + '\'' +
-	                ", contenu='" + contenu + '\'' +
-	                ", dateCreation=" + dateCreation +
-	                '}';
-	    }
+	public GestionRapport() {
+		this("agencePU");
 	}
 
+	public GestionRapport(String nomUnite) {
+		this.emf = Persistence.createEntityManagerFactory(nomUnite);
+	}
 
+	/** Sauvegarde un rapport. synchronized : plusieurs missions peuvent finir en meme temps. */
+	public synchronized void sauvegarder(RapportMission rapport) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			em.getTransaction().begin();
+			em.persist(rapport);
+			em.getTransaction().commit();
+		} catch (RuntimeException e) {
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	/** Retrouve un rapport grace a son identifiant (null s'il n'existe pas). */
+	public RapportMission rechercher(Long id) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.find(RapportMission.class, id);
+		} finally {
+			em.close();
+		}
+	}
+
+	/** Tous les rapports. */
+	public List<RapportMission> tous() {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.createQuery("SELECT r FROM RapportMission r ORDER BY r.id", RapportMission.class)
+					.getResultList();
+		} finally {
+			em.close();
+		}
+	}
+
+	/** Les rapports d'un corps celeste donne. */
+	public List<RapportMission> parCorpsCeleste(String nomCorps) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.createQuery(
+					"SELECT r FROM RapportMission r WHERE r.corpsCeleste = :corps ORDER BY r.id",
+					RapportMission.class)
+					.setParameter("corps", nomCorps)
+					.getResultList();
+		} finally {
+			em.close();
+		}
+	}
+
+	/** Ferme la connexion a la fin du programme. */
+	public void fermer() {
+		if (emf.isOpen()) {
+			emf.close();
+		}
+	}
+}

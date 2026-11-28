@@ -1,50 +1,82 @@
 package tp1;
+
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-//operation de sauvegarde et de recherche 
+
+/**
+ * Sauvegarde et recherche des rapports de mission dans la base H2 (via JPA).
+ */
 public class GestionRapport {
-	private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("agencePU");
 
-    // Sauvegarder un rapport
-    public void sauvegarder(RapportMission rapport) {
+	private final EntityManagerFactory emf;
 
-        EntityManager em = emf.createEntityManager();
+	public GestionRapport() {
+		this("agencePU");
+	}
 
-        try {
-            em.getTransaction().begin();
+	public GestionRapport(String nomUnite) {
+		this.emf = Persistence.createEntityManagerFactory(nomUnite);
+	}
 
-            em.persist(rapport);
+	/** Sauvegarde un rapport. synchronized : plusieurs missions peuvent finir en meme temps. */
+	public synchronized void sauvegarder(RapportMission rapport) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			em.getTransaction().begin();
+			em.persist(rapport);
+			em.getTransaction().commit();
+		} catch (RuntimeException e) {
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
 
-            em.getTransaction().commit();
+	/** Retrouve un rapport grace a son identifiant (null s'il n'existe pas). */
+	public RapportMission rechercher(Long id) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.find(RapportMission.class, id);
+		} finally {
+			em.close();
+		}
+	}
 
-            System.out.println("Rapport sauvegardé avec succès !");
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
+	/** Tous les rapports. */
+	public List<RapportMission> tous() {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.createQuery("SELECT r FROM RapportMission r ORDER BY r.id", RapportMission.class)
+					.getResultList();
+		} finally {
+			em.close();
+		}
+	}
 
-    // Retrouver un rapport grâce à son identifiant
-    public RapportMission rechercher(Long id) {
+	/** Les rapports d'un corps celeste donne. */
+	public List<RapportMission> parCorpsCeleste(String nomCorps) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			return em.createQuery(
+					"SELECT r FROM RapportMission r WHERE r.corpsCeleste = :corps ORDER BY r.id",
+					RapportMission.class)
+					.setParameter("corps", nomCorps)
+					.getResultList();
+		} finally {
+			em.close();
+		}
+	}
 
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            return em.find(RapportMission.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    // Fermer la connexion Hibernate à la fin du programme
-    public static void fermer() {
-        emf.close();
-    }
-
+	/** Ferme la connexion a la fin du programme. */
+	public void fermer() {
+		if (emf.isOpen()) {
+			emf.close();
+		}
+	}
 }

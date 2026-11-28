@@ -1,37 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
-             version="3.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <persistence-unit name="agencePU">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <modelVersion>4.0.0</modelVersion>
 
-        <class>tp1.RapportMission</class>
+    <groupId>tp1</groupId>
+    <artifactId>ProjetAgenceSpatiale</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
-        <properties>
-            <property name="jakarta.persistence.jdbc.driver"
-                      value="org.h2.Driver"/>
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-            <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:h2:./agenceDB"/>
+    <dependencies>
+        <!-- JPA : Hibernate (apporte aussi jakarta.persistence) -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.6.3.Final</version>
+        </dependency>
 
-            <property name="jakarta.persistence.jdbc.user"
-                      value="sa"/>
+        <!-- Base de donnees H2 stockee dans un fichier -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.3.232</version>
+        </dependency>
 
-            <property name="jakarta.persistence.jdbc.password"
-                      value=""/>
+        <!-- Tests JUnit 5 (avec les tests parametres) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-            <property name="hibernate.dialect"
-                      value="org.hibernate.dialect.H2Dialect"/>
+    <build>
+        <plugins>
+            <!-- Lance les tests JUnit 5 avec "mvn test" -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
 
-            <property name="hibernate.hbm2ddl.auto"
-                      value="update"/>
+            <!-- Lance le main avec "mvn compile exec:java" -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>tp1.main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-            <property name="hibernate.show_sql"
-                      value="true"/>
-        </properties>
-
-    </persistence-unit>
-
-</persistence>
+</project>
