@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.ArrayList;
 
-public class main {
+public class Main {
 
 	public static void main(String[] args) {
 
@@ -264,6 +264,7 @@ public class main {
 		Future<RapportMission> fMars = agence.lancerProchaineMission();
 		Future<RapportMission> fTitan = agence.lancerProchaineMission();
 		System.out.println("Lancees : Mars-1 et Titan-1. En cours : " + agence.getMissionsEnCours().size());
+		System.out.println("Operateurs occupes pendant la simulation : " + noms(agence.operateursOccupes()));
 		testerErreur("lancer Mars-2 (rover et operateur deja occupes)", () -> agence.lancerProchaineMission());
 
 		// Le main reste utilisable pendant la simulation
@@ -293,12 +294,56 @@ public class main {
 		agence.arreter();
 		System.out.println("Agence arretee. Rapports produits : " + agence.getRapports().size());
 
+		// ---------- Les listes demandees par le sujet ----------
+		System.out.println("\n----- Listes -----");
+
+		System.out.print("Missions planifiees restantes : " + agence.getMissionsPlanifiees().size());
+		System.out.print("\nMissions terminees (plus chere d'abord) :");
+		for (Mission m : agence.getMissionsTermineesParBudget()) {
+			System.out.print(" " + m.getNom() + " (" + m.getBudget() + ")");
+		}
+		System.out.println();
+
+		System.out.println("Engins par etat :");
+		for (var entree : agence.enginsParEtat().entrySet()) {
+			System.out.print("  " + entree.getKey() + " :");
+			for (Engin e : entree.getValue()) {
+				System.out.print(" " + e.getnom());
+			}
+			System.out.println();
+		}
+
+		System.out.println("Operateurs disponibles : " + noms(agence.operateursDisponibles())
+				+ " / occupes : " + noms(agence.operateursOccupes()));
+
+		System.out.println("Zones explorees de Mars (interet decroissant, puis coordonnees) :");
+		for (Zone z : agence.zonesExploreesTriees(marsA)) {
+			System.out.println("  " + z.getNom() + " interet " + z.getInteretScientifique() + " en " + z.getPosition());
+		}
+
+		System.out.println("Echantillons de Mars-1 par type :");
+		for (var entree : agence.echantillonsParType(mMars).entrySet()) {
+			System.out.println("  " + entree.getKey() + " : " + entree.getValue());
+		}
+
+		System.out.printf("Taux d'exploration : Mars %.1f %%, Titan %.1f %%%n",
+				agence.tauxExploration(marsA), agence.tauxExploration(titan));
+
 		// Relecture depuis la base H2 (les rapports des executions precedentes y sont aussi)
 		System.out.println("\nRapports en base : " + gestion.tous().size());
 		for (RapportMission rap : gestion.parCorpsCeleste("Mars")) {
 			System.out.println("  " + rap);
 		}
 		gestion.fermer();
+	}
+
+	/** Noms d'une liste d'operateurs, pour l'affichage. */
+	private static String noms(List<Operateur> ops) {
+		List<String> l = new ArrayList<>();
+		for (Operateur op : ops) {
+			l.add(op.getNom());
+		}
+		return l.toString();
 	}
 
 	/** Lance une action qui DOIT lever une exception et affiche le résultat. */

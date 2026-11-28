@@ -2,7 +2,10 @@ package tp1;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -216,6 +219,73 @@ public class Agence {
 
 	public synchronized List<CorpsCeleste> getCorpsCelestes() {
 		return new ArrayList<>(corpsCelestes);
+	}
+
+	// ---------- Listes demandees par le sujet ----------
+
+	/** Missions : de la plus chere a la moins chere. */
+	private static final Comparator<Mission> PAR_BUDGET_DECROISSANT =
+			Comparator.comparingInt(Mission::getBudget).reversed();
+
+	/** Zones : interet decroissant, puis coordonnees (ordre naturel de Zone, son compareTo). */
+	private static final Comparator<Zone> PAR_INTERET_PUIS_COORDONNEES =
+			Comparator.comparingDouble(Zone::getInteretScientifique).reversed()
+					.thenComparing(Comparator.naturalOrder());
+
+	/** Missions terminees, de la plus chere a la moins chere. */
+	public synchronized List<Mission> getMissionsTermineesParBudget() {
+		List<Mission> l = new ArrayList<>(terminees);
+		l.sort(PAR_BUDGET_DECROISSANT);
+		return l;
+	}
+
+	/** Engins regroupes par etat (EnumMap : une case par valeur de l'enum). */
+	public synchronized Map<EtatEngin, List<Engin>> enginsParEtat() {
+		return Engin.enginsParEtat(engins);
+	}
+
+	public synchronized List<Operateur> operateursDisponibles() {
+		return Operateur.operateursDisponibles(operateurs());
+	}
+
+	public synchronized List<Operateur> operateursOccupes() {
+		return Operateur.operateursOccupes(operateurs());
+	}
+
+	private List<Operateur> operateurs() {
+		List<Operateur> l = new ArrayList<>();
+		for (Personne p : personnes) {
+			if (p instanceof Operateur) {
+				l.add((Operateur) p);
+			}
+		}
+		return l;
+	}
+
+	/** Zones explorees d'un corps celeste, par interet decroissant puis par coordonnees. */
+	public List<Zone> zonesExploreesTriees(CorpsCeleste corps) {
+		List<Zone> l = new ArrayList<>();
+		for (Zone z : corps.getZones()) {
+			if (z.estExploree()) {
+				l.add(z);
+			}
+		}
+		l.sort(PAR_INTERET_PUIS_COORDONNEES);
+		return l;
+	}
+
+	/** Echantillons d'une mission regroupes par type (ROCHE, GLACE, POUSSIERE). */
+	public Map<TypeEchantillon, List<Echantillon>> echantillonsParType(Mission m) {
+		Map<TypeEchantillon, List<Echantillon>> resultat = new EnumMap<>(TypeEchantillon.class);
+		for (Echantillon e : m.getEchantillons()) {
+			resultat.computeIfAbsent(e.getType(), t -> new ArrayList<>()).add(e);
+		}
+		return resultat;
+	}
+
+	/** Taux d'exploration d'un corps celeste, en % (zones explorees / zones totales). */
+	public double tauxExploration(CorpsCeleste corps) {
+		return corps.tauxExploration();
 	}
 
 	// ---------- Arret propre ----------
