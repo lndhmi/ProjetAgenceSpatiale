@@ -10,28 +10,17 @@
         <class>tp1.RapportMission</class>
 
         <properties>
-            <property name="jakarta.persistence.jdbc.driver"
-                      value="org.h2.Driver"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <!-- Base H2 dans un fichier, dans le dossier data/ du projet (comme dans le sujet) -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:./data/astro"/>
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
 
-            <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:h2:./agenceDB"/>
-
-            <property name="jakarta.persistence.jdbc.user"
-                      value="sa"/>
-
-            <property name="jakarta.persistence.jdbc.password"
-                      value=""/>
-
-            <property name="hibernate.dialect"
-                      value="org.hibernate.dialect.H2Dialect"/>
-
-            <property name="hibernate.hbm2ddl.auto"
-                      value="update"/>
-
-            <property name="hibernate.show_sql"
-                      value="true"/>
+            <!-- Cree / met a jour la table automatiquement -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <!-- false : evite d'afficher le SQL au milieu de la demo -->
+            <property name="hibernate.show_sql" value="false"/>
         </properties>
-
     </persistence-unit>
 
 </persistence>
