@@ -1,18 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
 
+    <persistence-unit name="agencePU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <class>tp1.RapportMission</class>
 
-    <modelVersion>4.0.0</modelVersion>
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver"
+                      value="org.h2.Driver"/>
 
-    <groupId>tp1</groupId>
-    <artifactId>ProjetAgenceSpatiale</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:h2:./agenceDB"/>
 
-    <properties>
-        <maven.compiler.release>21</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+            <property name="jakarta.persistence.jdbc.user"
+                      value="sa"/>
 
-</project>
+            <property name="jakarta.persistence.jdbc.password"
+                      value=""/>
+
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.H2Dialect"/>
+
+            <property name="hibernate.hbm2ddl.auto"
+                      value="update"/>
+
+            <property name="hibernate.show_sql"
+                      value="true"/>
+        </properties>
+
+    </persistence-unit>
+
+</persistence>

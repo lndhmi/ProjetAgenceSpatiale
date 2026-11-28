@@ -184,7 +184,32 @@ public class main {
 		} catch (IllegalArgumentException ex) {
 			System.out.println("BUG : la promotion plante -> " + ex.getMessage());
 		}
-	}
+		 GestionRapport gestion = new GestionRapport();
+
+	        // Création d'un rapport
+	        RapportMission rapport = new RapportMission(
+	            "Mission Mars",
+	            "Rapport d'exploration",
+	            "Le rover a exploré la zone nord et collecté 3 échantillons."
+	        );
+
+	        // Sauvegarde
+	        gestion.sauvegarder(rapport);
+
+	        // Recherche par identifiant
+	        RapportMission resultat = gestion.rechercher(1L);
+
+	        if (resultat != null) {
+	            System.out.println("Rapport retrouvé :");
+	            System.out.println(resultat);
+	        } else {
+	            System.out.println("Rapport introuvable.");
+	        }
+
+	        GestionRapport.fermer();
+	    }
+	
+	    
 
 	/** Lance une action qui DOIT lever une exception et affiche le résultat. */
 	private static void testerErreur(String description, Runnable action) {
