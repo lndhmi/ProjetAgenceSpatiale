@@ -1,82 +1,45 @@
 package tp1;
 
-import java.util.List;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import java.time.LocalDate;
 
 /**
- * Sauvegarde et recherche des rapports de mission dans la base H2 (via JPA).
+ * Rapport produit automatiquement a la fin d'une mission.
+ * Plus tard, cette classe deviendra l'@Entity JPA sauvegardee dans H2.
  */
-public class GestionRapport {
+public class RapportMission {
+	private String nomMission;
+	private LocalDate date;
+	private String corpsCeleste;
+	private int nbZonesExplorees;
+	private int nbEchantillons;
+	private double interetTotal;
+	private boolean reussie;
+	private int budget;
 
-	private final EntityManagerFactory emf;
-
-	public GestionRapport() {
-		this("agencePU");
+	public RapportMission(Mission m) {
+		this.nomMission = m.getNom();
+		this.date = m.getDateDebut();
+		this.corpsCeleste = m.getCorps().getNom();
+		this.nbZonesExplorees = m.getZonesExplorees().size();
+		this.nbEchantillons = m.getNbEchantillons();
+		this.interetTotal = m.getInteretTotal();
+		this.reussie = m.estReussie();
+		this.budget = m.getBudget();
 	}
 
-	public GestionRapport(String nomUnite) {
-		this.emf = Persistence.createEntityManagerFactory(nomUnite);
-	}
+	public String getNomMission() { return nomMission; }
+	public LocalDate getDate() { return date; }
+	public String getCorpsCeleste() { return corpsCeleste; }
+	public int getNbZonesExplorees() { return nbZonesExplorees; }
+	public int getNbEchantillons() { return nbEchantillons; }
+	public double getInteretTotal() { return interetTotal; }
+	public boolean isReussie() { return reussie; }
+	public int getBudget() { return budget; }
 
-	/** Sauvegarde un rapport. synchronized : plusieurs missions peuvent finir en meme temps. */
-	public synchronized void sauvegarder(RapportMission rapport) {
-		EntityManager em = emf.createEntityManager();
-		try {
-			em.getTransaction().begin();
-			em.persist(rapport);
-			em.getTransaction().commit();
-		} catch (RuntimeException e) {
-			if (em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-			throw e;
-		} finally {
-			em.close();
-		}
-	}
-
-	/** Retrouve un rapport grace a son identifiant (null s'il n'existe pas). */
-	public RapportMission rechercher(Long id) {
-		EntityManager em = emf.createEntityManager();
-		try {
-			return em.find(RapportMission.class, id);
-		} finally {
-			em.close();
-		}
-	}
-
-	/** Tous les rapports. */
-	public List<RapportMission> tous() {
-		EntityManager em = emf.createEntityManager();
-		try {
-			return em.createQuery("SELECT r FROM RapportMission r ORDER BY r.id", RapportMission.class)
-					.getResultList();
-		} finally {
-			em.close();
-		}
-	}
-
-	/** Les rapports d'un corps celeste donne. */
-	public List<RapportMission> parCorpsCeleste(String nomCorps) {
-		EntityManager em = emf.createEntityManager();
-		try {
-			return em.createQuery(
-					"SELECT r FROM RapportMission r WHERE r.corpsCeleste = :corps ORDER BY r.id",
-					RapportMission.class)
-					.setParameter("corps", nomCorps)
-					.getResultList();
-		} finally {
-			em.close();
-		}
-	}
-
-	/** Ferme la connexion a la fin du programme. */
-	public void fermer() {
-		if (emf.isOpen()) {
-			emf.close();
-		}
+	@Override
+	public String toString() {
+		return "Rapport[" + nomMission + " sur " + corpsCeleste + " : " + nbZonesExplorees + " zones, "
+				+ nbEchantillons + " echantillons, interet " + interetTotal
+				+ (reussie ? ", REUSSIE" : ", ECHEC") + "]";
 	}
 }
