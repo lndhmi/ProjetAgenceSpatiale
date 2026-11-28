@@ -36,17 +36,25 @@ public class Agence {
 	private final long tempsParZoneMs;
 	private final double probaExploration;
 	private final double probaPanne;
+	private final GestionRapport gestionRapport; // peut etre null : pas de sauvegarde en base
 
-	public Agence(long graine, long tempsParZoneMs, double probaExploration, double probaPanne) {
+	public Agence(long graine, long tempsParZoneMs, double probaExploration, double probaPanne,
+			GestionRapport gestionRapport) {
 		this.random = new Random(graine);
+		this.gestionRapport = gestionRapport;
 		this.tempsParZoneMs = tempsParZoneMs;
 		this.probaExploration = probaExploration;
 		this.probaPanne = probaPanne;
 	}
 
-	/** Valeurs du sujet : 200 ms par zone, 80 % d'exploration, 10 % de panne. */
+	/** Valeurs du sujet : 200 ms par zone, 80 % d'exploration, 10 % de panne, sauvegarde en base. */
+	public Agence(long graine, GestionRapport gestionRapport) {
+		this(graine, 200, 0.8, 0.1, gestionRapport);
+	}
+
+	/** Sans base de donnees (pratique pour les tests). */
 	public Agence(long graine) {
-		this(graine, 200, 0.8, 0.1);
+		this(graine, 200, 0.8, 0.1, null);
 	}
 
 	// ---------- Ajouts ----------
@@ -135,6 +143,9 @@ public class Agence {
 			promouvoirCadets(m);
 			rapport = new RapportMission(m);
 			rapports.add(rapport);
+		}
+		if (gestionRapport != null) {
+			gestionRapport.sauvegarder(rapport); // persistance automatique en fin de mission
 		}
 		return rapport;
 	}
